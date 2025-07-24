@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googlesearch/Color/colors.dart';
 import 'package:googlesearch/services/api_service.dart';
+import 'package:googlesearch/utils/query_filter_helper.dart';
 import 'package:googlesearch/web/web_search_header.dart';
 import 'package:googlesearch/widgets/search_footer.dart';
 //import 'package:googlesearch/widgets/search_header.dart';
@@ -58,24 +59,30 @@ class SearchScreen extends StatelessWidget {
                 
                 const Divider(thickness: 0),
 
-                FutureBuilder<Map<String, dynamic>>(
-                  future: ApiService().fetchData(
-                      context: context, queryTerm: searchQuery, start: start),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data?['items'] == null) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Text(
-                            "No results found.",
-                            style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                          ),
-                        ),
-                      );
-                    }
+              FutureBuilder<Map<String, dynamic>>(
+  future: QueryFilterHelper.handleQueryAgeAndContent(
+    context: context,
+    searchQuery: searchQuery,
+    start: start,
+    ageCategory: ageCategory,
+  ),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      print("Snapshot error: ${snapshot.error}");
+      return Center(child: Text("Error: ${snapshot.error}"));
+    }
+    if (!snapshot.hasData) {
+      print("No data in snapshot.");
+      return const Center(child: Text("No results found."));
+    }
+    print("Snapshot data items count: ${snapshot.data?['items']?.length ?? 0}");
+    
+   
+  
+  
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

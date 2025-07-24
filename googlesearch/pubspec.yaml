@@ -35,6 +35,7 @@ flutter:
     - assets/images/search-icon.svg
     - assets/images/google-logo.png
     - assets/animation.json
+    - assets/harmful_words.json
 
   
 
